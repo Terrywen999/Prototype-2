@@ -6,31 +6,51 @@ public class Astronaut : MonoBehaviour
 {
     public Transform airShip;
     private Rigidbody2D rb;
-    private Vector2 movement;
+    public Vector3 direction;
     public float moveSpeed = 5;
+    public float distance = 0;
+    public bool dragging = false;
     
     // Start is called before the first frame update
     void Start()
     {
         rb = this.GetComponent<Rigidbody2D>();
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        Vector3 direction = airShip.position - transform.position;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        rb.rotation = angle;
+        direction = airShip.position - transform.position;
         direction.Normalize();
-        movement = direction;
+        
+            
     }
 
     private void FixedUpdate()
     {
-        moveCharacter(movement);
+        moveCharacter();
+        distance = Mathf.Sqrt(Mathf.Pow((airShip.position.x - transform.position.x),2) + Mathf.Pow((airShip.position.y - transform.position.y),2));
     }
-    void moveCharacter(Vector2 direction)
+
+    void moveCharacter()
     {
-        rb.MovePosition((Vector2)transform.position + (direction * moveSpeed * Time.deltaTime));
+
+        if (distance > 10f) {
+            rb.velocity = Vector2.zero;
+            rb.MovePosition(transform.position + (direction * moveSpeed * Time.fixedDeltaTime));
+            // rb.AddForceAtPosition(direction * moveSpeed, transform.position);  
+        }
+        // // rb.MovePosition((Vector2)transform.position + (direction * moveSpeed * Time.deltaTime));
+        else {
+
+            rb.velocity = direction * moveSpeed;
+        }
+
+        Color color = new Color(0f, 0f, 1.0f);
+        Debug.DrawLine(transform.position, transform.position + direction, color);
+
+        Debug.Log(rb.velocity);
+        
     }
 }
