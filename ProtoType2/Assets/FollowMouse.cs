@@ -13,8 +13,8 @@ public class FollowMouse : MonoBehaviour
     float maxVelocity = 3;
 
     public float rotationSpeed = 3;
-    public float decreaseSpeed = 2.0f;
-    Vector2 direction;
+    public float decreaseSpeed = 5.0f;
+    
     private void Start()
     {
         mainCamera = Camera.main;
@@ -30,6 +30,7 @@ public class FollowMouse : MonoBehaviour
         {
             RemoveForce(decreaseSpeed);
         }
+
         //ThrustForward(yAxis);
         //Rotate(transform, xAxis * -rotationSpeed);
 
@@ -42,28 +43,20 @@ public class FollowMouse : MonoBehaviour
 
     private void RemoveForce(float decreaseSpeed)
     {
-        if (rb.velocity.x >= 0f && rb.velocity.y >= 0f)
-        {
-            rb.velocity -= direction * decreaseSpeed;
-            rb.angularVelocity = 0f;
-        }
-        else
-        {
-            rb.velocity = Vector2.zero;
-            rb.angularVelocity = 0f;
-        }
-        
+        rb.drag = decreaseSpeed;
     }
+
     private void FollowMousePositionDelayed(float maxSpeed)
     {
         //transform.position = Vector2.MoveTowards(transform.position, GetWorldPositionFromMouse(), maxSpeed * Time.deltaTime);
         Vector2 pos = new Vector2(transform.position.x, transform.position.y);
-        direction = GetWorldPositionFromMouse() - pos;
+        Vector2 direction = GetWorldPositionFromMouse() - pos;
         direction.Normalize();
         
         Debug.DrawLine(transform.position, new Vector3(GetWorldPositionFromMouse().x, GetWorldPositionFromMouse().y, 0));
         rb.AddForce(direction * maxSpeed);
     }
+
     private Vector2 GetWorldPositionFromMouse()
     {
         return mainCamera.ScreenToWorldPoint(Input.mousePosition);
